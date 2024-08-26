@@ -1,2 +1,7 @@
-// Using prisma here
+// Prisma Client Setup
 
+import { PrismaClient } from "@prisma/client";
+
+const prisma = new PrismaClient();
+
+export default prisma;
