@@ -64,6 +64,7 @@ We'll start by setting up the development environment, ensuring I have all the n
 - **Web Socket**: WebSockets are used for problem Submission and status sending.
 - **Redis** : Creating Redis Queue for Efficient problem solution.
 - **Zod** : Zod Can be used for Schema Validation checking data Types.
+- **Prisma**: Prisma ORM helping to access MONGODB DataBase.
 - **MongoDB** : MongoDB is used for storing user data.
 
 ## WebSocket & Redis Queue Architecture
