@@ -9,6 +9,7 @@ Welcome to the Coding Platform project! This repository contains the source code
 - [Features](#features)
 - [Course Modules](#course-modules)
 - [Technologies Used](#technologies-used)
+- [WebSocket](#WebSocket & Redis Queue Architecture)
 - [Getting Started](#getting-started)
 - [Deployment](#deployment)
 - [Contributing](#contributing)
