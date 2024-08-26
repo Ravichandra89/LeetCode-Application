@@ -1,6 +1,7 @@
 import prisma from "@/prisma";
 import bcrypt from "bcryptjs";
 import { NextResponse } from "next/server";
+import { SendVerification } from "@/helpers/SendVerification";
 
 const saltRounds = 10;
 
@@ -75,12 +76,25 @@ export async function POST(request: Request) {
     }
 
     // Send verification email or other follow-up actions
-    
+    const mailResponse = await SendVerification(email, username, verifyCode);
 
-    return NextResponse.json({
-        success : true,
-        message : "User created successfully",
-    }, {status : 200});
+    if (!mailResponse) {
+      return NextResponse.json(
+        {
+          success: false,
+          message: "Failed to send verification email",
+        },
+        { status: 500 }
+      );
+    }
+
+    return NextResponse.json(
+      {
+        success: true,
+        message: "User created successfully",
+      },
+      { status: 200 }
+    );
   } catch (error) {
     console.error("Error registering user:", error);
     return NextResponse.json(
