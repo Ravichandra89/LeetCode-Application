@@ -25,6 +25,7 @@ We'll start by setting up the development environment, ensuring I have all the n
 ## Features
 
 - **User Authentication**: Sign up, log in, and password reset functionality.
+- **Email Verification**: Sending Verification Code Using Resend for Verification.
 - **Home Page & Problems Table**: Clean and responsive UI for displaying coding problems.
 - **YouTube Video Modal**: Interactive modal for video tutorials.
 - **Code Editor & Test Cases**: A custom-built code editor for solving problems with real-time feedback.
@@ -66,6 +67,7 @@ We'll start by setting up the development environment, ensuring I have all the n
 - **Zod** : Zod Can be used for Schema Validation checking data Types.
 - **Prisma**: Prisma ORM helping to access MONGODB DataBase.
 - **MongoDB** : MongoDB is used for storing user data.
+- **Resend** : Sending Verification Code Using Resend.
 
 ## WebSocket & Redis Queue Architecture
 <img width="1710" alt="Screenshot 2024-08-02 at 8 32 54 PM" src="https://github.com/user-attachments/assets/ea178f6b-87b3-46a0-9c7c-ba4a900e6606">
