@@ -1,4 +1,4 @@
-# Coding Platform - Build a Full-Stack Web Application with React, Next.js, TypeScript, Tailwind CSS & Firebase
+# Coding Platform - Build a Full-Stack Web Application with React, Next.js, TypeScript, Tailwind CSS & Firebase, WebSocket, RedisQueue
 
 Welcome to the Coding Platform project! This repository contains the source code and detailed instructions for building a comprehensive full-stack web application. By following this course, you'll learn how to develop a feature-rich coding platform that includes user authentication, problem-solving functionalities, and more.
 
