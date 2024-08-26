@@ -67,7 +67,7 @@ We'll start by setting up the development environment, ensuring I have all the n
 - **MongoDB** : MongoDB is used for storing user data.
 
 ## WebSocket & Redis Queue Architecture
-app/WebSocket.png
+
 
 ## Getting Started
 
