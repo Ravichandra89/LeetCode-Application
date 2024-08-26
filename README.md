@@ -66,6 +66,9 @@ We'll start by setting up the development environment, ensuring I have all the n
 - **Zod** : Zod Can be used for Schema Validation checking data Types.
 - **MongoDB** : MongoDB is used for storing user data.
 
+## WebSocket & Redis Queue Architecture
+app/WebSocket.png
+
 ## Getting Started
 
 To get started with this project, follow these steps:
@@ -90,5 +93,5 @@ To get started with this project, follow these steps:
    npm run dev
    ```
 
-**Contributing**
+## Contributing
 Contributions are welcome! Feel free to submit a pull request or open an issue to discuss any changes.
