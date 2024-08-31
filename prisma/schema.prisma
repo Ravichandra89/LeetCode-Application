@@ -28,6 +28,8 @@ model User {
     codeProgress CodeProgress[]
     Achievement  Achievement[]
     LeaderBoard  LeaderBoard[]
+    StarProblem  StarProblem[]
+    Attempt      Attempt[]
 }
 
 // Problem Model 
@@ -47,6 +49,8 @@ model Problem {
     tag          Tag?           @relation(fields: [tagId], references: [id])
     tagId        String?        @db.ObjectId
     CodeProgress CodeProgress[]
+    StarProblem  StarProblem[]
+    Attempt      Attempt[]
 }
 
 // Exaple Model
@@ -137,4 +141,27 @@ model LeaderBoard {
     user User @relation(fields: [userId], references: [id])
 }
 
+// Fetching Star Problems
+model StarProblem {
+    id        String   @id @default(auto()) @map("_id") @db.ObjectId
+    userId    String   @db.ObjectId
+    problemId String   @db.ObjectId
+    createdAt DateTime @default(now())
 
+    // relation
+    user    User    @relation(fields: [userId], references: [id])
+    problem Problem @relation(fields: [problemId], references: [id])
+}
+
+// Problem Attempting Model - On each problem submission
+model Attempt {
+    id        String   @id @default(auto()) @map("_id") @db.ObjectId
+    userId    String   @db.ObjectId
+    problemId String   @db.ObjectId
+    code      String
+    attempAt  DateTime @default(now())
+
+    // Relations 
+    user    User    @relation(fields: [userId], references: [id])
+    problem Problem @relation(fields: [problemId], references: [id])
+}
