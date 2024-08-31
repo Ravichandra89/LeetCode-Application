@@ -10,7 +10,7 @@ export interface User {
   isVerified: boolean;
 }
 
-// Schema for User
+// Schema for User 
 const UserSchema: Schema<User> = new mongoose.Schema({
   username: {
     type: String,
