@@ -22,7 +22,12 @@ export async function POST(request: Request) {
         description,
         difficulty,
         tags,
-        examples: {create: {}}
+        examples: {
+          create: examples.map((it: { input: string; output: string }) => ({
+            input: JSON.stringify(it.input),
+            output: JSON.stringify(it.output),
+          })),
+        },
       },
     });
 
