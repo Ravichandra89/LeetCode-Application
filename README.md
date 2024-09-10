@@ -33,7 +33,7 @@ We'll start by setting up the development environment, ensuring I have all the n
 - **Interactive Features**: Like, dislike, and star functionality for problem solutions.
 - **Code Submission**: Submit solutions and save progress using local storage.
 - **Settings Modal**: Customize user settings through a dedicated UI.
-- **Error Handling**: Debug common issues like hydration errors in Next.js.
+
 
 ## Course Modules
 
