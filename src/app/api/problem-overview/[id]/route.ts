@@ -4,14 +4,26 @@ import { NextResponse } from "next/server";
 
 export async function GET(request: Request) {
   try {
-    const { id: problemId } = await request.json();
+    // Take problem from url
+    const url = new URL(request.url);
+    const problemId = url.pathname.split("/").pop();
+
+    if (!problemId) {
+      return NextResponse.json(
+        {
+          success: false,
+          message: "Problem ID is required",
+        },
+        { status: 404 }
+      );
+    }
 
     // Fetch the problem
     const response = await prisma.problem.findUnique({
       where: { id: problemId },
       include: {
+        tag: true,
         examples: true,
-        tags: true,
       },
     });
 
@@ -19,7 +31,7 @@ export async function GET(request: Request) {
       return NextResponse.json(
         {
           success: false,
-          message: "Problem not found",
+          message: "Problem not found while Fetching!!",
         },
         { status: 404 }
       );
@@ -33,7 +45,7 @@ export async function GET(request: Request) {
           title: response.title,
           description: response.description,
           difficulty: response.difficulty,
-          tags: response.tags,
+          tags: response.tag,
           examples: response.examples.map((exp) => ({
             input: exp.input,
             output: exp.output,
