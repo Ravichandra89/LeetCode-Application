@@ -1,10 +1,10 @@
 import prisma from "@/prisma";
 import { NextResponse } from "next/server";
 
-// Like & disLike problem route
+// Like & Dislike problem route
 export async function POST(request: Request) {
   try {
-    // Gather the data Action ( Like / Dislike)
+    // Gather the data for Action (Like / Dislike)
     const { problemId, action } = await request.json();
 
     if (!problemId || !action || !["like", "dislike"].includes(action)) {
@@ -13,34 +13,31 @@ export async function POST(request: Request) {
           success: false,
           message: "Invalid Input",
         },
-        { status: 404 }
-      );
-
-      // Add count of like / dislike action
-      const updateData =
-        action === "like"
-          ? { increment: { likes: 1 } }
-          : { increment: { dislikes: 1 } };
-
-      // Updating into problem
-      const response = await prisma.problem.update({
-        where: { id: problemId },
-        data: updateData,
-      });
-
-      return NextResponse.json(
-        {
-          success: true,
-          message: `${
-            action.charAt(0).toUpperCase() + action.slice(1)
-          } recorded`,
-          problem: response,
-        },
-        { status: 200 }
+        { status: 400 }
       );
     }
+
+    const updateData =
+      action === "like"
+        ? { likes: { increment: 1 } } 
+        : { dislikes: { increment: 1 } };
+
+    // Updating the problem
+    const response = await prisma.problem.update({
+      where: { id: problemId },
+      data: updateData,
+    });
+
+    return NextResponse.json(
+      {
+        success: true,
+        message: `${action.charAt(0).toUpperCase() + action.slice(1)} recorded`,
+        problem: response,
+      },
+      { status: 200 }
+    );
   } catch (error) {
-    console.error("Error While Like/disLike the Problem", error);
+    console.error("Error while like/dislike the problem", error);
     return NextResponse.json(
       {
         success: false,

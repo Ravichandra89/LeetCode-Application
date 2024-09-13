@@ -1,13 +1,15 @@
 import prisma from "@/prisma";
 import { NextResponse } from "next/server";
 
+// Fetch the all problemssrc/app/api/problems/route.ts
+
 export async function GET(request: Request) {
   try {
-    // Find the all problems Request
+    // Find all problems
     const response = await prisma.problem.findMany({
       include: {
         examples: true,
-        tags: true,
+        tag: true, 
       },
     });
 
@@ -22,7 +24,13 @@ export async function GET(request: Request) {
 
     return NextResponse.json({
       success: true,
-      data: response,
+      data: response.map((problem) => ({
+        title: problem.title,
+        difficulty: problem.difficulty,
+        tag: problem.tag?.name, 
+        examples: problem.examples,
+      })),
+      message: "All Problems Fetched Successfully!",
     });
   } catch (error) {
     console.error("Error Fetching All Problems", error);

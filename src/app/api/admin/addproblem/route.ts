@@ -14,9 +14,10 @@ export async function POST(request: Request) {
     // Gather Data from Request
     const { title, description, difficulty, tags, examples } =
       await request.json();
+    console.log({ title, description, difficulty, tags, examples });
 
     // Create the problem
-    const newProblem = await prisma.Problem.create({
+    const newProblem = await prisma.problem.create({
       data: {
         title,
         description,
