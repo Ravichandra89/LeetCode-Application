@@ -76,6 +76,8 @@ We'll start by setting up the development environment, ensuring I have all the n
 ## High Level System Design
 ![HighLevelDesign](https://github.com/user-attachments/assets/5dc15f0b-4169-4ec2-83f2-528d38954ce3)
 
+## Micro Services Design
+<img width="1473" alt="Screenshot 2024-09-14 at 11 14 46 AM" src="https://github.com/user-attachments/assets/b415aac3-2673-44d2-9df2-5d8fc4bbce92">
 
 ## Getting Started
 
