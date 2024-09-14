@@ -1,49 +1,59 @@
+import prisma from "@/prisma";
 import { NextResponse } from "next/server";
-import Queue from "bull";
+import { createClient } from "redis";
 
-// Redis Queue Client
-const submissionQueue = new Queue("problem-submission", {
-  redis: {
-    host: "127.0.0.1",
-    port: 6379,
-  },
+//  Initilize Redis Client
+const redisClient = createClient({
+  url: "redis://127.0.0.1:6379",
 });
 
-submissionQueue.on("error", (err) => {
-  console.error("Redis Queue Error:", err);
-});
+redisClient.on("error", (err) => console.log("Redis Client Error", err));
 
 export async function POST(request: Request) {
   try {
+    // Gather the data
     const { problemId, userId, code, language, input, output } =
       await request.json();
 
-    // Validate required fields
+    // Validation on data
     if (!problemId || !userId || !code || !language) {
       return NextResponse.json(
         {
           success: false,
-          message: "Please fill all the required fields",
+          message: "All fields are Required",
+        },
+        { status: 404 }
+      );
+    }
+
+    // push the submission on Redis Queue
+    const response = await redisClient.lPush(
+      "problem-submission",
+      JSON.stringify({
+        problemId,
+        userId,
+        code,
+        language,
+        input,
+        output,
+      })
+    );
+
+    if (!response) {
+      return NextResponse.json(
+        {
+          success: false,
+          message: "Queue Push Operation not working!!",
         },
         { status: 400 }
       );
     }
 
-    // Push the data into the queue
-    await submissionQueue.add({
-      problemId,
-      userId,
-      code,
-      language,
-      input,
-      output,
-    });
-
     // Send a success response
     return NextResponse.json(
       {
         success: true,
-        message: "Submission received successfully",
+        message: "Submission recived succesfully",
       },
       { status: 200 }
     );
