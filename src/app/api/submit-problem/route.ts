@@ -2,7 +2,7 @@ import prisma from "@/prisma";
 import { NextResponse } from "next/server";
 import { createClient } from "redis";
 
-//  Initilize Redis Client
+// Initialize Redis Client
 const redisClient = createClient({
   url: "redis://127.0.0.1:6379",
 });
@@ -11,39 +11,34 @@ redisClient.on("error", (err) => console.log("Redis Client Error", err));
 
 export async function POST(request: Request) {
   try {
-    // Gather the data
+    // Connect to Redis
+    await redisClient.connect();
+
     const { problemId, userId, code, language, input, output } =
       await request.json();
 
-    // Validation on data
+    // Validate required fields
     if (!problemId || !userId || !code || !language) {
       return NextResponse.json(
         {
           success: false,
-          message: "All fields are Required",
+          message: "Please fill all the required fields",
         },
-        { status: 404 }
+        { status: 400 }
       );
     }
 
-    // push the submission on Redis Queue
+    // Push the submission to the Redis queue (list)
     const response = await redisClient.lPush(
-      "problem-submission",
-      JSON.stringify({
-        problemId,
-        userId,
-        code,
-        language,
-        input,
-        output,
-      })
+      "problems",
+      JSON.stringify({ problemId, userId, code, language, input, output })
     );
 
     if (!response) {
       return NextResponse.json(
         {
           success: false,
-          message: "Queue Push Operation not working!!",
+          message: "Failed to push submission to Redis queue",
         },
         { status: 400 }
       );
@@ -53,7 +48,7 @@ export async function POST(request: Request) {
     return NextResponse.json(
       {
         success: true,
-        message: "Submission recived succesfully",
+        message: "Submission received successfully",
       },
       { status: 200 }
     );
@@ -66,5 +61,8 @@ export async function POST(request: Request) {
       },
       { status: 500 }
     );
+  } finally {
+    // Disconnect from Redis
+    await redisClient.disconnect();
   }
 }
