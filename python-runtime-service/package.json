@@ -1,0 +1,19 @@
+{
+  "name": "python-runtime-service",
+  "version": "1.0.0",
+  "main": "index.js",
+  "type" : "module",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "description": "",
+  "dependencies": {
+    "exec": "^0.2.1",
+    "express": "^4.21.0",
+    "fs": "^0.0.1-security",
+    "uuid": "^10.0.0"
+  }
+}
