@@ -18,4 +18,4 @@ RUN apt-get install -y nodejs npm
 RUN npm install 
 
 # start server
-CMD ["node", "start"]
+CMD ["node", "server.js"]
