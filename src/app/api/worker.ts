@@ -1,11 +1,31 @@
 import prisma from "@/prisma";
 import { NextResponse } from "next/server";
 import { createClient } from "redis";
+import WebSocket, { WebSocketServer } from "ws";
 import axios from "axios";
 
 // Create  redis Client
-const redisClient = createClient();
-const pubClient = createClient();
+const redisClient = createClient({ url: "redis://127.0.0.1:6379" });
+const pubClient = createClient({ url: "redis://127.0.0.1:6379" });
+
+// Web Socket Connection
+const wss = new WebSocket.Server({ port: 8084 });
+const clients: { [problemId: string]: WebSocket } = {};
+
+// Connection Handler for Web Socket
+wss.on("connection", (ws) => {
+  ws.on("message", (message: string) => {
+    const { problemId } = JSON.parse(message);
+    if (problemId) {
+      clients[problemId] = ws;
+      console.log(`Client connected for problemId: ${problemId}`);
+    }
+  });
+
+  ws.on("close", () => {
+    console.log("Client disconnected");
+  });
+});
 
 // Language Urls
 const microServiceUrl: { [key: string]: string } = {
@@ -37,6 +57,60 @@ const sendTaskToMicroService = async (
   }
 };
 
+// Check the runtime given code and actual Code
+const checkRuntimeCodeWithActual = async (
+  problemId: string,
+  response: string
+) => {
+  try {
+    // Match the Outputs
+    // 1. Fetch the problem from dataBase using prisma
+
+    const problem = await prisma.submission.findUnique({
+      where: { id: problemId },
+      include: { totalCasesPass: true },
+    });
+
+    if (!problem || !problem.totalCasesPass) {
+      console.error("Error Fetching Problem for Validation");
+      return {
+        status: "Error",
+        message: "Error Fetching Problem for Validation",
+      };
+    }
+
+    const expectedOutputs = problem.totalCasesPass.map((it) => it.output);
+    const generatedOutputs = response.output.split("\n").filter(Boolean);
+
+    // Compare the Expected and Generated Output
+    if (generatedOutputs.length != expectedOutputs.length) {
+      return {
+        status: "Error",
+        message: "Output length mismatch!",
+      };
+    }
+
+    // checking each output
+    for (let i = 0; i < expectedOutputs.length; i++) {
+      if (generatedOutputs[i].trim() != expectedOutputs[i].trim()) {
+        return {
+          status: "Wrong Submission",
+          message: "Incorrect Output",
+        };
+      }
+    }
+
+    // If all cases are matched than
+    return {
+      success: "Accepted",
+      message: "All Test Cases Passed",
+    };
+  } catch (error) {
+    console.error("Error Checking output with actual problem output", error);
+    return { status: "Error", message: "Error During Output Validation" };
+  }
+};
+
 // Start the worker Node
 const workerNode = async () => {
   try {
@@ -47,37 +121,62 @@ const workerNode = async () => {
     console.log("Redis & Pub Clients are Connected");
 
     while (true) {
-      // Get the Task from redis queue
-      const task = await redisClient.brPop("problem", 0);
-      if (task) {
-        const taskData = JSON.parse(task.element);
-        const { language, code, inputs, problemId, userId } = taskData;
+      try {
+        // Connect the redis and pub client
+        await redisClient.connect();
+        await pubClient.connect();
 
-        // Language Validation
-        if (!microServiceUrl[language]) {
-          console.error("Language is Not supported");
-          continue;
+        console.log("Redis and pub Clients are Connected!");
+
+        const task = await redisClient.brPop("problems", 0);
+
+        if (task) {
+          const taskData = JSON.parse(task.element);
+          const { language, code, inputs, problemId, userId } = taskData;
+
+          // language Validation
+          if (!microServiceUrl[language]) {
+            console.error("Language Not Supported");
+            continue;
+          }
+
+          console.log(
+            `Processing code for ${language} and problemid ${problemId}, for User : ${userId}`
+          );
+
+          const ExecutionResponse = await sendTaskToMicroService(
+            language,
+            code,
+            inputs
+          );
+          if (!ExecutionResponse) {
+            console.error("Error in Execution Response");
+            continue;
+          }
+
+          const CheckingResponse = await checkRuntimeCodeWithActual(
+            problemId,
+            ExecutionResponse
+          );
+
+          await pubClient.publish(
+            "result",
+            JSON.stringify({ problemId, userId, CheckingResponse })
+          );
+
+          // Send result to Client via WebSocket
+          const clientSocket = clients[problemId];
+          if (clientSocket && clientSocket.readyState === WebSocket.OPEN) {
+            clientSocket.send(
+              JSON.stringify({ status: CheckingResponse.status })
+            );
+          } else {
+            console.log(
+              `Client socket for problemId ${problemId} not connected`
+            );
+          }
         }
-
-        console.log(
-          `Processing code for ${language} and problemid ${problemId}, for User : ${userId}`
-        );
-
-        // Send task to appropriate MicroService
-        const response = await sendTaskToMicroService(language, code, inputs);
-
-        if (!response) {
-          console.error("Failed to send task to microservice");
-        }
-
-        // Publish response to redis publish
-        await pubClient.publish(
-          "result",
-          JSON.stringify({ problemId, userId, response })
-        );
-
-        // Send result to Client via Websocket
-      }
+      } catch (error) {}
     }
   } catch (error) {
     console.error("Error in Redis Connection", error);
