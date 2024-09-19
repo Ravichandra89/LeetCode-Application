@@ -17,6 +17,7 @@ model User {
     verifyCode       String
     verifyCodeExpiry String
     isVerified       Boolean @default(false)
+    imageUrl        String?  // Optional 
 
     // Timestamps for better tracking
     createdAt DateTime @default(now())
