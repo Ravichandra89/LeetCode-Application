@@ -63,7 +63,7 @@ export async function POST(request: Request) {
     return NextResponse.json(
       {
         sucess: false,
-        message: "Error While UPdating User Profile",
+        message: "Error Updating User Profile",
       },
       { status: 500 }
     );
