@@ -17,5 +17,5 @@ EXPOSE 8000
 RUN apt-get install -y nodejs npm
 RUN npn install 
 
-# Start Server
+# Start Server with installed Node
 CMD ["node", "server.js"]
