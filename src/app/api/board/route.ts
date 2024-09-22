@@ -76,14 +76,134 @@ export async function GET(request: Request) {
   }
 }
 
-// 2. POST Request
+// 2. POST Request : Creating New Board for Initial user
 
-export async function POST(request: Request) {}
+export async function POST(request: Request) {
+  const { userId, rank, score, solvedEasy, solvedMid, solvedHard } =
+    await request.json();
+
+  if (!userId || rank == null || score == null) {
+    return NextResponse.json(
+      {
+        success: false,
+        message: "Invalid Request",
+      },
+      { status: 400 }
+    );
+  }
+
+  try {
+    const entery = await prisma.leaderBoard.create({
+      data: {
+        userId,
+        rank,
+        score,
+        solvedEasy: solvedEasy || 0,
+        solvedMid: solvedMid || 0,
+        solvedHard: solvedHard || 0,
+      },
+    });
+
+    return NextResponse.json(
+      {
+        success: true,
+        message: "New Board Created Successfully",
+        entery,
+      },
+      { status: 200 }
+    );
+  } catch (error) {
+    return NextResponse.json(
+      {
+        success: false,
+        message: "Error While Creating UserBoard",
+      },
+      { status: 500 }
+    );
+  }
+}
 
 // 3. PUT Request
 
-export async function PUT(request: Request) {}
+export async function PUT(request: Request) {
+  const { userId, rank, score, solvedEasy, solvedMid, solvedHard } =
+    await request.json();
+  if (!userId || rank == null || score == null) {
+    return NextResponse.json(
+      {
+        success: false,
+        message: "Invalid Request",
+      },
+      { status: 404 }
+    );
+  }
+
+  try {
+    const updatedLeaderBoard = await prisma.leaderBoard.update({
+      where: { id: userId },
+      data: {
+        rank: rank || undefined,
+        score: score || undefined,
+        solvedEasy: solvedEasy || undefined,
+        solvedMid: solvedMid || undefined,
+        solvedHard: solvedHard || undefined,
+      },
+    });
+
+    return NextResponse.json(
+      {
+        success: true,
+        message: "LeaderBoard Updated Successfully",
+        updatedLeaderBoard,
+      },
+      { status: 200 }
+    );
+  } catch (error) {
+    return NextResponse.json(
+      {
+        success: false,
+        message: "Error While Updating UserBoard",
+      },
+      { status: 500 }
+    );
+  }
+}
 
 // 4. DELETE Request (Optional)
 
-export async function DELETE(request: Request) {}
+export async function DELETE(request: Request) {
+  const { searchParams } = new URL(request.url);
+  const userId = searchParams.get("userId");
+
+  if (!userId) {
+    return NextResponse.json(
+      {
+        success: false,
+        message: "Invalid Request",
+      },
+      { status: 404 }
+    );
+  }
+
+  try {
+    const res = await prisma.leaderBoard.delete({
+      where: { id: userId },
+    });
+
+    return NextResponse.json(
+      {
+        success: true,
+        message: "LeaderBoard Deleted Successfully",
+      },
+      { status: 200 }
+    );
+  } catch (error) {
+    return NextResponse.json(
+      {
+        success: false,
+        message: "Error While Deleting UserBoard",
+      },
+      { status: 500 }
+    );
+  }
+}
