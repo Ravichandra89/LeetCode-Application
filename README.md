@@ -79,6 +79,11 @@ We'll start by setting up the development environment, ensuring I have all the n
 ## Micro Services Design
 <img width="1473" alt="Screenshot 2024-09-14 at 11 14 46 AM" src="https://github.com/user-attachments/assets/b415aac3-2673-44d2-9df2-5d8fc4bbce92">
 
+## FrontEnd Pages 
+
+<img width="1679" alt="Screenshot 2024-09-30 at 8 33 06 PM" src="https://github.com/user-attachments/assets/1e550643-9ec6-4f83-b343-aa58a0c23c43">
+
+
 ## Tools Used
 <img width="1236" alt="Screenshot 2024-09-16 at 2 55 06 PM" src="https://github.com/user-attachments/assets/da8a0468-3f86-41ce-b13a-04a499024937">
 
